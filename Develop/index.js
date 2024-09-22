@@ -1,88 +1,74 @@
+const { Client } = require('pg');
 const inquirer = require('inquirer');
-const Database = require('./queries');
 
-async function main() {
-  const choices = [
-    'View all departments',
-    'View all roles',
-    'View all employees',
-    'Add a department',
-    'Add a role',
-    'Add an employee',
-    'Update an employee role',
-  ];
+// Connect to PostgreSQL
+const client = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'employee_db',
+    password: '1204Sarabilane$$',
+    port: 5432,
+});
 
-  const { action } = await inquirer.prompt({
-    name: 'action',
-    type: 'list',
-    message: 'What would you like to do?',
-    choices,
-  });
+client.connect();
 
-  switch (action) {
-    case 'View all departments':
-      const departments = await Database.getDepartments();
-      console.table(departments);
-      break;
+const mainMenu = async () => {
+    const answer = await inquirer.prompt({
+        type: 'list',
+        name: 'action',
+        message: 'What would you like to do?',
+        choices: [
+            'View All Departments',
+            'View All Roles',
+            'View All Employees',
+            'Add Department',
+            'Add Role',
+            'Add Employee',
+            'Update Employee Role',
+            'Exit'
+        ]
+    });
 
-    case 'View all roles':
-      const roles = await Database.getRoles();
-      console.table(roles);
-      break;
+    switch (answer.action) {
+        case 'View All Departments':
+            viewAllDepartments();
+            break;
+        case 'View All Roles':
+            viewAllRoles();
+            break;
+        case 'View All Employees':
+            viewAllEmployees();
+            break;
+        case 'Add Department':
+            addDepartment();
+            break;
+        // Add more cases here
+        case 'Exit':
+            client.end(); // Close the database connection
+            console.log("Goodbye!");
+            break;
+    }
+};
 
-    case 'View all employees':
-      const employees = await Database.getEmployees();
-      console.table(employees);
-      break;
+// Function to view all departments
+const viewAllDepartments = async () => {
+    const res = await client.query('SELECT * FROM department');
+    console.table(res.rows);
+    mainMenu();
+};
 
-    case 'Add a department':
-      const { departmentName } = await inquirer.prompt({
-        name: 'departmentName',
+// Function to add a department
+const addDepartment = async () => {
+    const answer = await inquirer.prompt({
         type: 'input',
-        message: 'Enter the name of the department:',
-      });
-      await Database.addDepartment(departmentName);
-      console.log('Department added.');
-      break;
+        name: 'name',
+        message: 'Enter the name of the new department:',
+    });
 
-    case 'Add a role':
-      const { roleName, roleSalary, roleDepartmentId } = await inquirer.prompt([
-        { name: 'roleName', type: 'input', message: 'Enter the name of the role:' },
-        { name: 'roleSalary', type: 'input', message: 'Enter the salary of the role:' },
-        { name: 'roleDepartmentId', type: 'input', message: 'Enter the department ID for the role:' },
-      ]);
-      await Database.addRole(roleName, roleSalary, roleDepartmentId);
-      console.log('Role added.');
-      break;
+    await client.query('INSERT INTO department (name) VALUES ($1)', [answer.name]);
+    console.log(`Department "${answer.name}" added.`);
+    mainMenu();
+};
 
-    case 'Add an employee':
-      const { firstName, lastName, roleId, managerId } = await inquirer.prompt([
-        { name: 'firstName', type: 'input', message: 'Enter the first name of the employee:' },
-        { name: 'lastName', type: 'input', message: 'Enter the last name of the employee:' },
-        { name: 'roleId', type: 'input', message: 'Enter the role ID for the employee:' },
-        { name: 'managerId', type: 'input', message: 'Enter the manager ID for the employee (leave blank if none):', default: null },
-      ]);
-      await Database.addEmployee(firstName, lastName, roleId, managerId);
-      console.log('Employee added.');
-      break;
-
-    case 'Update an employee role':
-      const employeesList = await Database.getEmployees();
-      const { employeeId, newRoleId } = await inquirer.prompt([
-        {
-          name: 'employeeId',
-          type: 'list',
-          message: 'Select the employee to update:',
-          choices: employeesList.map(emp => ({ name: `${emp.first_name} ${emp.last_name}`, value: emp.id })),
-        },
-        { name: 'newRoleId', type: 'input', message: 'Enter the new role ID for the employee:' },
-      ]);
-      await Database.updateEmployeeRole(employeeId, newRoleId);
-      console.log('Employee role updated.');
-      break;
-  }
-
-  main(); // Restart the application
-}
-
-main();
+// Call the main menu
+mainMenu();
