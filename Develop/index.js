@@ -57,7 +57,20 @@ const viewAllDepartments = async () => {
     mainMenu();
 };
 
-// Function to add a department
+// Function to view all roles
+const viewAllRoles = async () => {
+    const res = await client.query('SELECT * FROM role');
+    console.table(res.rows);
+    mainMenu();
+};
+
+// Function to view all employees
+const viewAllEmployees = async () => {
+    const res = await client.query('SELECT * FROM employee');
+    console.table(res.rows);
+    mainMenu();
+};
+
 const addDepartment = async () => {
     const answer = await inquirer.prompt({
         type: 'input',
