@@ -75,7 +75,7 @@ The database schema consists of three tables:
 # Walkthrough Video
 A walkthrough video demonstrating the functionality of the application can be found at:
 
-(Ensure that you replace the link with your actual walkthrough video URL)
+https://app.screencastify.com/v3/watch/95Y92JEYB5QXtdlAxbOi
 
 # Technologies Used
 Node.js: Backend JavaScript runtime.
