@@ -1,4 +1,4 @@
-# Challenge-10-Employee-Tracker
+# Challenge-10-Employee-Management-System
 
 # Description
 The Employee Tracker is a command-line application that allows business owners to manage and organize their employee database efficiently. This tool provides an easy-to-use interface for viewing, adding, and updating employee information, roles, and departments using Node.js, Inquirer, and PostgreSQL. It acts as a Content Management System (CMS) to track and manage employee data.
@@ -75,7 +75,6 @@ The database schema consists of three tables:
 # Walkthrough Video
 A walkthrough video demonstrating the functionality of the application can be found at:
 
-Walkthrough Video Link
 (Ensure that you replace the link with your actual walkthrough video URL)
 
 # Technologies Used
